@@ -83,6 +83,8 @@ builder.Services.AddAutoMapper(typeof(MappingConfig));
 //builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRepository<Herder>, Repository<Herder>>();
+builder.Services.AddScoped<IService<Herder>,  Service<Herder>>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(options =>
