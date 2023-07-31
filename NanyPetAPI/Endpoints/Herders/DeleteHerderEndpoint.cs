@@ -9,6 +9,7 @@ using System.Net;
 
 namespace NanyPetAPI.Endpoints.Herders
 {
+    [Route("api/herder")]
     public class DeleteHerderEndpoint : EndpointBaseAsync
         .WithRequest<string>
         .WithActionResult
@@ -39,7 +40,7 @@ namespace NanyPetAPI.Endpoints.Herders
         /// <response code="200">herder retrieved</response>
         /// <response code="400">bad request</response>
         /// <response code="404">Product not found</response>
-        [HttpDelete("api/herders/{id}", Name = "DeleteHerder")]
+        [HttpDelete("{id}", Name = "DeleteHerder")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

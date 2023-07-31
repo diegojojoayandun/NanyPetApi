@@ -9,6 +9,7 @@ using System.Net;
 
 namespace NanyPetAPI.Endpoints.Herders
 {
+    [Route("api/herder")]
     public class ListAllHerdersEndpoint : EndpointBaseAsync
         .WithoutRequest
         .WithActionResult<APIResponse>
@@ -35,7 +36,7 @@ namespace NanyPetAPI.Endpoints.Herders
         /// Retieves a List with all registered herders
         /// </summary>
         /// <response code="200">Herder's list retrieved</response>
-        [HttpGet("api/herders")]
+        [HttpGet]
         [ResponseCache(Duration = 60)]
         //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]

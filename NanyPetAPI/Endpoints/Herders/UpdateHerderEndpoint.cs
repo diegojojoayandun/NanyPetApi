@@ -1,6 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
 using AutoMapper;
-using Azure;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Herder;
@@ -10,21 +9,27 @@ using System.Net;
 
 namespace NanyPetAPI.Endpoints.Herders
 {
+    public class Query
+    {
+        [FromRoute(Name = "id")] public string id { get; set; } = null!;
+        [FromBody] public HerderUpdateDto updateDto { get; set; } = null!;
+
+    }
     [Route("api/herder")]
-    public class ListHerderByIdEndpoint : EndpointBaseAsync
-        .WithRequest<string>
-        .WithActionResult<APIResponse>
+    public class UpdateHerderEndpoint : EndpointBaseAsync
+        .WithRequest<Query>
+        .WithActionResult
     {
         private readonly IService<Herder> _herderService;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
-        private readonly ILogger<ListHerderByIdEndpoint> _logger;
+        private readonly ILogger<UpdateHerderEndpoint> _logger;
         protected APIResponse _apiResponse;
-        public ListHerderByIdEndpoint(
+        public UpdateHerderEndpoint(
             IService<Herder> herderService,
             IMapper mapper,
             IConfiguration configuration,
-            ILogger<ListHerderByIdEndpoint> logger)
+            ILogger<UpdateHerderEndpoint> logger)
         {
             _herderService = herderService;
             _mapper = mapper;
@@ -34,55 +39,44 @@ namespace NanyPetAPI.Endpoints.Herders
         }
 
         /// <summary>
-        /// Retrieves a specific Herder by unique id
+        /// Update a specific Herder by unique id
         /// </summary>
-        /// <param id="herder id">The herder id</param>
+        /// <param id="herder Id">The herder id</param>
         /// <response code="200">herder retrieved</response>
         /// <response code="400">bad request</response>
-        /// <response code="404">herder not found</response>
-        [HttpGet("{id}", Name = "GetHerder")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        /// <response code="404">Product not found</response>
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [SwaggerOperation(
-            Summary = "Obtiene cuidador por Id",
-            Description = "Obtiene cuidador por Id",
-            OperationId = "GetHerderById",
+            Summary = "Actualiza datos de cuidador",
+            Description = "Actualiza datos de cuidador",
+            OperationId = "UpdateHerder",
             Tags = new[] { "Cuidadores" })]
-        public override async Task<ActionResult<APIResponse>> HandleAsync(string id, CancellationToken cancellationToken = default)
+        public override async Task<ActionResult> HandleAsync([FromRoute] Query request, CancellationToken cancellationToken = default)
         {
             try
             {
-                if (id == "")
+                if (request.updateDto == null || request.id != request.updateDto.Id)
                 {
-                    _logger.LogError("Error al buscar con Id " + id);
                     _apiResponse.IsSuccess = false;
                     _apiResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(_apiResponse);
                 }
 
-                var herder = await _herderService.GetById(v => v.Id == id);
+                Herder modelHerder = _mapper.Map<Herder>(request.updateDto);
 
-                if (herder == null)
-                {
-                    _logger.LogError("No hay datos asociados a ese Id " + id);
-                    _apiResponse.IsSuccess = false;
-                    _apiResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(_apiResponse);
-                }
-
-                _apiResponse.Result = _mapper.Map<HerderDto>(herder);
-                _apiResponse.StatusCode = HttpStatusCode.OK;
+                await _herderService.Update(modelHerder);
+                _apiResponse.StatusCode = HttpStatusCode.NoContent;
                 return Ok(_apiResponse);
-
             }
             catch (Exception ex)
             {
                 _apiResponse.IsSuccess = false;
                 _apiResponse.ErrorMessages = new List<string> { ex.ToString() };
             }
-            return _apiResponse;
+            return BadRequest(_apiResponse);
 
         }
     }

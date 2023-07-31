@@ -22,7 +22,7 @@ var Configuration = builder.Configuration; // using IConfiguration Interface  in
 
 new EnvLoader().Load();
 Configuration.AddEnvironmentVariables();
-//builder.Configuration.AddEnvironmentVariables();
+builder.Configuration.AddEnvironmentVariables();
 
 
 builder.Services.AddControllers();
@@ -62,8 +62,6 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddResponseCaching();
 
-var asss = Configuration["CONNECTION_STRING"];
-
 
 // DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
@@ -78,9 +76,7 @@ builder.Services.AddIdentity<User, IdentityRole>()
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
-//builder.Services.AddScoped<IRepository<Herder>, Repository<Herder>>();
-//builder.Services.AddScoped<IRepository<Owner>, Repository<Owner>>();
-//builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRepository<Herder>, Repository<Herder>>();

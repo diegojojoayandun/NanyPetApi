@@ -9,6 +9,7 @@ using System.Net;
 
 namespace NanyPetAPI.Endpoints.Herders
 {
+    [Route("api/herder")]
     public class CreateNewHerderEndpoint : EndpointBaseAsync
         .WithRequest<HerderCreateDto>
         .WithActionResult<APIResponse>
@@ -34,7 +35,7 @@ namespace NanyPetAPI.Endpoints.Herders
         /// <summary>
         /// Create a Herder in the database
         /// </summary>
-        [HttpPost("api/herders")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
