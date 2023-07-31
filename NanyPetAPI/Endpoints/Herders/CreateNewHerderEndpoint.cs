@@ -1,6 +1,5 @@
 ﻿using Ardalis.ApiEndpoints;
 using AutoMapper;
-using Azure;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Herder;
