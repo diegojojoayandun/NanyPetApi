@@ -1,9 +1,9 @@
-using BusinessLogicLayer.Interfaces;
-using BusinessLogicLayer.Services;
+using BusinessLogicLayer.Services.GenericServices;
+using BusinessLogicLayer.Services.UserServices;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
-using DataAccessLayer.Interfaces;
-using DataAccessLayer.Repositories;
+using DataAccessLayer.Repositories.Generic;
+using DataAccessLayer.Repositories.Users;
 using DotEnv.Core;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

@@ -1,8 +1,7 @@
-﻿using BusinessLogicLayer.Interfaces;
-using DataAccessLayer.Entities.DTO.Login;
-using DataAccessLayer.Interfaces;
+﻿using DataAccessLayer.Entities.DTO.Login;
+using DataAccessLayer.Repositories.Users;
 
-namespace BusinessLogicLayer.Services
+namespace BusinessLogicLayer.Services.UserServices
 {
     public class UserService : IUserService
     {
@@ -31,7 +30,7 @@ namespace BusinessLogicLayer.Services
 
         public Task<UserDto> SignUp(RegisterRequestDTO registerRequestDTO)
         {
-            return  _userRepository.SignUp(registerRequestDTO);
+            return _userRepository.SignUp(registerRequestDTO);
         }
 
     }

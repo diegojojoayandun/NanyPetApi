@@ -1,9 +1,7 @@
 ﻿using Ardalis.ApiEndpoints;
 using AutoMapper;
-using Azure;
-using BusinessLogicLayer.Interfaces;
+using BusinessLogicLayer.Services.GenericServices;
 using DataAccessLayer.Entities;
-using DataAccessLayer.Entities.DTO.Herder;
 using DataAccessLayer.Entities.DTO.Owner;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,19 +17,16 @@ namespace NanyPetAPI.Endpoints.Owners
         private readonly IService<Owner> _ownerService;
         private readonly ILogger<ListAllOwnersEndpoint> _logger;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
         protected APIResponse _apiResponse;
 
 
         public ListAllOwnersEndpoint(
             IService<Owner> ownerService, 
-            IConfiguration configuration, 
             IMapper mapper, 
             ILogger<ListAllOwnersEndpoint> logger)
         {
             _ownerService = ownerService;
             _apiResponse = new APIResponse();
-            _configuration = configuration;
             _logger = logger;
             _mapper = mapper;
 
@@ -40,19 +35,19 @@ namespace NanyPetAPI.Endpoints.Owners
         /// <summary>
         /// Retrieves a list with all Owners registered
         /// </summary>
-        /// <response code="200">Herder's list retrieved</response>
+        /// <response code="200">Owner's list retrieved</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [SwaggerOperation(
             Summary = "Obtiene un listado de todos los propietarios registrados",
             Description = "Obtiene un listado de todos los propietarios registrados",
-            OperationId = "GetAllOwners",
+            OperationId = "ListAllOwnersEndpoint",
             Tags = new[] { "Propietarios" })]
         public  override async Task<ActionResult<APIResponse>> HandleAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                _logger.LogInformation("Obteniendo lista de cuidadores"); // log -> show information on VS terminal
+                _logger.LogInformation("Obteniendo lista de cuidadores");
                 IEnumerable<Owner> ownerList = await _ownerService.GetAll();
                 _apiResponse.Result = _mapper.Map<IEnumerable<OwnerDto>>(ownerList);
                 _apiResponse.StatusCode = HttpStatusCode.OK;

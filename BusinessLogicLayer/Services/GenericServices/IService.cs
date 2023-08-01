@@ -1,7 +1,7 @@
 ﻿using NanyPet.Api.Models.Specifications;
 using System.Linq.Expressions;
 
-namespace BusinessLogicLayer.Interfaces
+namespace BusinessLogicLayer.Services.GenericServices
 {
     public interface IService<T> where T : class
     {

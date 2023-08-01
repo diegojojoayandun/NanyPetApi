@@ -1,8 +1,8 @@
 ﻿using DataAccessLayer.Entities.DTO.Login;
 
-namespace DataAccessLayer.Interfaces
+namespace BusinessLogicLayer.Services.UserServices
 {
-    public interface IUserRepository
+    public interface IUserService
     {
         bool IsUniqueUser(string userName);
         string GenerateJwtToken(string user, IList<string> roles);

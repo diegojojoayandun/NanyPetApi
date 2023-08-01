@@ -2,7 +2,6 @@
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Login;
-using DataAccessLayer.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace DataAccessLayer.Repositories
+namespace DataAccessLayer.Repositories.Users
 {
     public class UserRepository : IUserRepository
     {

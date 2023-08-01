@@ -1,10 +1,9 @@
 ﻿using DataAccessLayer.Data;
-using DataAccessLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using NanyPet.Api.Models.Specifications;
 using System.Linq.Expressions;
 
-namespace DataAccessLayer.Repositories
+namespace DataAccessLayer.Repositories.Generic
 {
     public class Repository<T> : IRepository<T> where T : class
     {
@@ -14,7 +13,7 @@ namespace DataAccessLayer.Repositories
         public Repository(ApplicationDbContext context)
         {
             _context = context;
-            this.dbSet = _context.Set<T>();
+            dbSet = _context.Set<T>();
         }
         public async Task Create(T entity)
         {

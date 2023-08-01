@@ -1,7 +1,7 @@
 ﻿using NanyPet.Api.Models.Specifications;
 using System.Linq.Expressions;
 
-namespace DataAccessLayer.Interfaces
+namespace DataAccessLayer.Repositories.Generic
 {
     public interface IRepository<T> where T : class
     {
