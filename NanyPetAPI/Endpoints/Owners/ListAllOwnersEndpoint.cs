@@ -1,14 +1,17 @@
 ﻿using Ardalis.ApiEndpoints;
 using AutoMapper;
+using Azure;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Herder;
 using DataAccessLayer.Entities.DTO.Owner;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
 namespace NanyPetAPI.Endpoints.Owners
 {
+    [Route("api/owner")]
     public class ListAllOwnersEndpoint : EndpointBaseAsync
         .WithoutRequest
         .WithActionResult<APIResponse>
@@ -33,6 +36,18 @@ namespace NanyPetAPI.Endpoints.Owners
             _mapper = mapper;
 
         }
+
+        /// <summary>
+        /// Retrieves a list with all Owners registered
+        /// </summary>
+        /// <response code="200">Herder's list retrieved</response>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [SwaggerOperation(
+            Summary = "Obtiene un listado de todos los propietarios registrados",
+            Description = "Obtiene un listado de todos los propietarios registrados",
+            OperationId = "GetAllOwners",
+            Tags = new[] { "Propietarios" })]
         public  override async Task<ActionResult<APIResponse>> HandleAsync(CancellationToken cancellationToken = default)
         {
             try

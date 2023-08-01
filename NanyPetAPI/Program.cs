@@ -81,7 +81,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRepository<Herder>, Repository<Herder>>();
 builder.Services.AddScoped<IService<Herder>,  Service<Herder>>();
-
+builder.Services.AddScoped<IRepository<Owner>, Repository<Owner>>();
+builder.Services.AddScoped<IService<Owner>, Service<Owner>>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(options =>
