@@ -1,7 +1,7 @@
 ﻿using DataAccessLayer.Entities.DTO.Login;
 using DataAccessLayer.Repositories.Users;
 
-namespace BusinessLogicLayer.Services.UserServices
+namespace BusinessLogicLayer.Services.UserService
 {
     public class UserService : IUserService
     {

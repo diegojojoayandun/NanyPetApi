@@ -1,7 +1,7 @@
 ﻿using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Azure;
-using BusinessLogicLayer.Services.GenericServices;
+using BusinessLogicLayer.Services.GenericService;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

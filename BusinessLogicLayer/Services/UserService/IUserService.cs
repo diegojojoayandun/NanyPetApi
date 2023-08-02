@@ -1,6 +1,6 @@
 ﻿using DataAccessLayer.Entities.DTO.Login;
 
-namespace BusinessLogicLayer.Services.UserServices
+namespace BusinessLogicLayer.Services.UserService
 {
     public interface IUserService
     {

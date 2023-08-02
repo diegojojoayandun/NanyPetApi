@@ -1,5 +1,5 @@
-using BusinessLogicLayer.Services.GenericServices;
-using BusinessLogicLayer.Services.UserServices;
+using BusinessLogicLayer.Services.GenericService;
+using BusinessLogicLayer.Services.UserService;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Repositories.Generic;

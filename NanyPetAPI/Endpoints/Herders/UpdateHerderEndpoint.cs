@@ -1,6 +1,6 @@
 ﻿using Ardalis.ApiEndpoints;
 using AutoMapper;
-using BusinessLogicLayer.Services.GenericServices;
+using BusinessLogicLayer.Services.GenericService;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Herder;
 using Microsoft.AspNetCore.Mvc;

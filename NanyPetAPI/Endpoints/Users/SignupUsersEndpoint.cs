@@ -3,7 +3,7 @@
 using Ardalis.ApiEndpoints;
 using AutoMapper;
 using Azure;
-using BusinessLogicLayer.Services.UserServices;
+using BusinessLogicLayer.Services.UserService;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Login;
 using Microsoft.AspNetCore.Mvc;

@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLogicLayer.Services.GenericServices
+namespace BusinessLogicLayer.Services.GenericService
 {
     public class Service<T> : IService<T> where T : class
     {
