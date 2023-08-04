@@ -39,9 +39,9 @@ namespace NanyPetAPI.Endpoints.Owners
         {
             APIResponse apiResponse = await _ownerService.Create(request, ModelState);
 
-            return apiResponse.IsSuccess ? 
-                CreatedAtRoute("GetOwner", new { id = apiResponse.Result }, apiResponse) : 
-                BadRequest(apiResponse.Result);
+            return apiResponse.IsSuccess 
+                ? CreatedAtRoute("GetOwner", new { id = apiResponse.Result }, apiResponse) 
+                : BadRequest(apiResponse.Result);
         }
     }
 }
