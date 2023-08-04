@@ -1,6 +1,7 @@
 ﻿using Ardalis.ApiEndpoints;
 using AutoMapper;
 using BusinessLogicLayer.Services.GenericService;
+using BusinessLogicLayer.Services.OwnerService;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Owner;
 using Microsoft.AspNetCore.Mvc;
@@ -14,22 +15,12 @@ namespace NanyPetAPI.Endpoints.Owners
         .WithRequest<OwnerCreateDto>
         .WithActionResult<APIResponse>
     {
-        private readonly IService<Owner> _ownerService;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<CreateNewOwnerEndpoint> _logger;
-        protected APIResponse _apiResponse;
-        public CreateNewOwnerEndpoint(
-            IService<Owner> ownerService,
-            IMapper mapper,
-            IConfiguration configuration,
-            ILogger<CreateNewOwnerEndpoint> logger)
+        private readonly OwnerService _ownerService;
+
+        public CreateNewOwnerEndpoint(OwnerService ownerService)
+
         {
             _ownerService = ownerService;
-            _mapper = mapper;
-            _configuration = configuration;
-            _apiResponse = new APIResponse();
-            _logger = logger;
         }
 
         /// <summary>
@@ -40,46 +31,22 @@ namespace NanyPetAPI.Endpoints.Owners
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(
-            Summary = "Crea un nuevo cuidador en la Base de datos",
-            Description = "Crea un nuevo cuidador en la Base de datos",
-            OperationId = "CreateHerder",
+            Summary = "Crea un nuevo propietario en la Base de datos",
+            Description = "Crea un nuevo propietario en la Base de datos",
+            OperationId = "Create",
             Tags = new[] { "Propietarios" })]
         public override async Task<ActionResult<APIResponse>> HandleAsync(OwnerCreateDto request, CancellationToken cancellationToken = default)
         {
-            try
+            APIResponse apiResponse = await _ownerService.Create(request, ModelState);
+
+            if (apiResponse.IsSuccess)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                if (await _ownerService.GetById(v => v.EmailUser == request.EmailUser) != null)
-                {
-                    ModelState.AddModelError("Error Usuario", "ya hay usuario asociado a ese email!");
-                    return BadRequest(ModelState);
-                }
-
-                if (request == null)
-                {
-                    return BadRequest(request);
-                }
-
-                Owner modelHerder = _mapper.Map<Owner>(request);
-
-                await _ownerService.Create(modelHerder);
-                _apiResponse.Result = modelHerder;
-                _apiResponse.StatusCode = HttpStatusCode.Created;
-                return CreatedAtRoute("GetHerder", new { id = modelHerder.Id }, _apiResponse);
-
+                return CreatedAtRoute("GetOwner", new { id = apiResponse.Result }, apiResponse);
             }
-            catch (Exception ex)
+            else
             {
-                _apiResponse.IsSuccess = false;
-                _apiResponse.ErrorMessages = new List<string> { ex.Message.ToString() };
+                return BadRequest(apiResponse.Result);
             }
-
-            return _apiResponse;
-
         }
     }
 }

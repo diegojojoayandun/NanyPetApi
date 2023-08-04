@@ -1,4 +1,5 @@
 using BusinessLogicLayer.Services.GenericService;
+using BusinessLogicLayer.Services.OwnerService;
 using BusinessLogicLayer.Services.UserService;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
@@ -83,6 +84,7 @@ builder.Services.AddScoped<IRepository<Herder>, Repository<Herder>>();
 builder.Services.AddScoped<IService<Herder>,  Service<Herder>>();
 builder.Services.AddScoped<IRepository<Owner>, Repository<Owner>>();
 builder.Services.AddScoped<IService<Owner>, Service<Owner>>();
+builder.Services.AddScoped<OwnerService>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(options =>

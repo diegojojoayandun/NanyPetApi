@@ -13,5 +13,10 @@ namespace DataAccessLayer.Entities
         public List<string> ErrorMessages { get; set; } = null!;
         public object Result { get; set; } = null!;
         public int TotalPages { get; set; }
+
+        public static implicit operator APIResponse(List<Owner> v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

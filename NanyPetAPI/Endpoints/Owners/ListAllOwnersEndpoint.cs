@@ -1,11 +1,8 @@
 ﻿using Ardalis.ApiEndpoints;
-using AutoMapper;
-using BusinessLogicLayer.Services.GenericService;
+using BusinessLogicLayer.Services.OwnerService;
 using DataAccessLayer.Entities;
-using DataAccessLayer.Entities.DTO.Owner;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Net;
 
 namespace NanyPetAPI.Endpoints.Owners
 {
@@ -14,22 +11,12 @@ namespace NanyPetAPI.Endpoints.Owners
         .WithoutRequest
         .WithActionResult<APIResponse>
     {
-        private readonly IService<Owner> _ownerService;
-        private readonly ILogger<ListAllOwnersEndpoint> _logger;
-        private readonly IMapper _mapper;
-        protected APIResponse _apiResponse;
+        private readonly OwnerService _ownerService;
 
-
-        public ListAllOwnersEndpoint(
-            IService<Owner> ownerService, 
-            IMapper mapper, 
-            ILogger<ListAllOwnersEndpoint> logger)
+        public ListAllOwnersEndpoint(OwnerService ownerService) 
+            
         {
             _ownerService = ownerService;
-            _apiResponse = new APIResponse();
-            _logger = logger;
-            _mapper = mapper;
-
         }
 
         /// <summary>
@@ -45,22 +32,9 @@ namespace NanyPetAPI.Endpoints.Owners
             Tags = new[] { "Propietarios" })]
         public  override async Task<ActionResult<APIResponse>> HandleAsync(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                _logger.LogInformation("Obteniendo lista de cuidadores");
-                IEnumerable<Owner> ownerList = await _ownerService.GetAll();
-                _apiResponse.Result = _mapper.Map<IEnumerable<OwnerDto>>(ownerList);
-                _apiResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(_apiResponse);
-            }
-            catch (Exception ex)
-            {
-                _apiResponse.IsSuccess = false;
-                _apiResponse.ErrorMessages = new List<string> { ex.ToString() };
-            }
-
-            return _apiResponse;
-
+            APIResponse apiResponse = await _ownerService.GetAll();
+            return Ok(apiResponse);
+            
         }
     }
 }

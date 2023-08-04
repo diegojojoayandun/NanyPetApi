@@ -2,6 +2,7 @@
 using AutoMapper;
 using Azure;
 using BusinessLogicLayer.Services.GenericService;
+using BusinessLogicLayer.Services.OwnerService;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Herder;
 using DataAccessLayer.Entities.DTO.Owner;
@@ -16,22 +17,11 @@ namespace NanyPetAPI.Endpoints.Owners
         .WithRequest<string>
         .WithActionResult<APIResponse>
     {
-        private readonly IService<Owner> _ownerService;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<ListOwnerByIdEndpoint> _logger;
-        protected APIResponse _apiResponse;
-        public ListOwnerByIdEndpoint(
-            IService<Owner> ownerService,
-            IMapper mapper,
-            IConfiguration configuration,
-            ILogger<ListOwnerByIdEndpoint> logger)
+        private readonly OwnerService _ownerService;
+
+        public ListOwnerByIdEndpoint(OwnerService ownerService)
         {
             _ownerService = ownerService;
-            _mapper = mapper;
-            _configuration = configuration;
-            _apiResponse = new APIResponse();
-            _logger = logger;
         }
 
         /// <summary>
@@ -49,42 +39,12 @@ namespace NanyPetAPI.Endpoints.Owners
         [SwaggerOperation(
             Summary = "Obtiene cuidador por Id",
             Description = "Obtiene cuidador por Id",
-            OperationId = "GetHerderById",
+            OperationId = "GetById",
             Tags = new[] { "Propietarios" })]
         public override async Task<ActionResult<APIResponse>> HandleAsync(string id, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                if (id == "")
-                {
-                    _logger.LogError("Error al buscar con Id " + id);
-                    _apiResponse.IsSuccess = false;
-                    _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(_apiResponse);
-                }
-
-                var owner = await _ownerService.GetById(v => v.Id == id);
-
-                if (owner == null)
-                {
-                    _logger.LogError("No hay datos asociados a ese Id " + id);
-                    _apiResponse.IsSuccess = false;
-                    _apiResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(_apiResponse);
-                }
-
-                _apiResponse.Result = _mapper.Map<OwnerDto>(owner);
-                _apiResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(_apiResponse);
-
-            }
-            catch (Exception ex)
-            {
-                _apiResponse.IsSuccess = false;
-                _apiResponse.ErrorMessages = new List<string> { ex.ToString() };
-            }
-            return _apiResponse;
-
+            APIResponse apiResponse = await _ownerService.GetById(id);
+            return Ok(apiResponse);
         }
     }
 }
