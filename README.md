@@ -2,6 +2,8 @@
 
 ![alt text](https://i.ibb.co/yST3rtq/nanypet-logo-removebg-preview.png)
 
+![alt text](https://drive.google.com/file/d/1tk8VA8wxVE0IxFXmurOuwEJwCBcEOkXX/view?usp=sharing)
+
 This project is meant for educational purposes only.
 
 RestAPI, manage basic CRUD operations for nanypet App, 3-tier Architecture, no controllers, DI(Dependency Injection) pattern, repository pattern, Ardalis Endpoints, caching, pagination.
