@@ -2,7 +2,11 @@
 
 ![alt text](https://i.ibb.co/yST3rtq/nanypet-logo-removebg-preview.png)
 
-![alt text](https://drive.google.com/file/d/1tk8VA8wxVE0IxFXmurOuwEJwCBcEOkXX/view?usp=sharing)
+![alt text](https://i.ibb.co/s9FwQkt/Screenshot-1.png)
+
+![alt text](https://i.ibb.co/gyqQctq/Screenshot-3.png)
+
+
 
 This project is meant for educational purposes only.
 
