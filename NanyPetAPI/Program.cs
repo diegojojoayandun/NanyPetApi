@@ -138,7 +138,7 @@ if (app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseRouting();
 
@@ -148,4 +148,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+
+app.Run($"http://127.0.0.1:{port}");
