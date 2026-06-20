@@ -1,0 +1,402 @@
+/* ── HERO FONTS & ANIMATIONS ──────────────────── */
+.hero-font-display { font-family: 'Fredoka', system-ui, sans-serif; }
+.hero-font-body    { font-family: 'Nunito', system-ui, sans-serif; }
+
+/* bob/bobSlow run before JS kicks in; after first RAF frame the
+   inline style.transform takes over parallax so animation is moot.
+   We keep them for the pre-JS paint and for no-JS users. */
+@keyframes hero-bob {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
+}
+@keyframes hero-bob-slow {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-22px); }
+}
+
+.hero-bob      { animation: hero-bob 5s ease-in-out infinite; }
+.hero-bob-slow { animation: hero-bob-slow 6s ease-in-out infinite; }
+.hero-bob-d1   { animation-delay: 0.3s; }
+.hero-bob-d2   { animation-delay: 0.6s; }
+
+/* ── ROOT WRAPPER ──────────────────────────────── */
+.hero-root {
+  position: relative;
+  width: 100%;
+  /* overflow-x: hidden on html/body (index.css) handles horizontal bleed.
+     Do NOT set overflow:hidden here — it would clip parallax-translated elements. */
+  background: radial-gradient(120% 90% at 80% 0%, #FFE3B0 0%, #FFF6EA 48%, #FFF6EA 100%);
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+/* ── HERO SECTION ──────────────────────────────── */
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 0 7vw;
+  /* clip the big blobs at the section boundary, not the root */
+  overflow: hidden;
+}
+
+/* ── BLOBS ─────────────────────────────────────── */
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+.hero-blob-teal {
+  top: -12%; left: -8%;
+  width: 540px; height: 540px;
+  background: radial-gradient(circle at 35% 35%, #8FE3D8, #36C2B4);
+  opacity: 0.22; filter: blur(2px);
+}
+.hero-blob-orange {
+  top: 18%; right: -10%;
+  width: 460px; height: 460px;
+  background: radial-gradient(circle at 40% 35%, #FFC36B, #FF8A3D);
+  opacity: 0.20;
+}
+.hero-blob-coral {
+  bottom: -14%; left: 30%;
+  width: 420px; height: 420px;
+  background: radial-gradient(circle at 40% 35%, #FFB4C4, #FF7E9D);
+  opacity: 0.18;
+}
+
+/* ── PAW PRINTS ────────────────────────────────── */
+.hero-paw {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+  user-select: none;
+}
+
+/* ── TOP BAR ───────────────────────────────────── */
+.hero-topbar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30px 0;
+  will-change: transform;
+}
+.hero-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.hero-logo-icon {
+  width: 42px; height: 42px;
+  border-radius: 14px;
+  background: #FF8A3D;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 6px 14px rgba(255,138,61,0.35);
+  flex-shrink: 0;
+}
+.hero-logo-text {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700; font-size: 26px;
+  color: #2A2118; letter-spacing: -0.5px;
+}
+.hero-logo-text em { color: #FF8A3D; font-style: normal; }
+.hero-nav {
+  display: flex; align-items: center; gap: 28px;
+}
+.hero-nav-link {
+  font-weight: 700; color: #5C5042;
+  text-decoration: none; font-size: 15px;
+  transition: color .15s;
+}
+.hero-nav-link:hover { color: #FF8A3D; }
+.hero-nav-login {
+  font-weight: 800; color: #fff;
+  background: #2A2118; text-decoration: none;
+  font-size: 14px; padding: 11px 22px;
+  border-radius: 999px;
+  transition: background .15s, transform .15s;
+}
+.hero-nav-login:hover { background: #3d3025; transform: scale(1.03); }
+.hero-nav-dashboard {
+  font-weight: 800; color: #fff;
+  background: #FF8A3D; text-decoration: none;
+  font-size: 14px; padding: 11px 22px;
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(255,138,61,.35);
+  transition: box-shadow .15s, transform .15s;
+}
+.hero-nav-dashboard:hover { transform: scale(1.03); box-shadow: 0 10px 24px rgba(255,138,61,.45); }
+
+/* ── BODY COLUMNS ──────────────────────────────── */
+.hero-body {
+  position: relative; z-index: 10;
+  display: flex; align-items: center;
+  min-height: calc(100vh - 200px);
+  min-height: calc(100svh - 200px);
+  gap: 40px;
+}
+
+/* ── COPY (LEFT) ───────────────────────────────── */
+.hero-copy {
+  flex: 1 1 50%; max-width: 600px;
+  will-change: transform;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; border: 2px solid #FFE0BE;
+  padding: 8px 16px; border-radius: 999px;
+  font-weight: 800; color: #FF8A3D; font-size: 14px;
+  box-shadow: 0 6px 18px rgba(255,138,61,0.10);
+  margin-bottom: 22px;
+}
+.hero-eyebrow-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%; background: #36C2B4;
+  flex-shrink: 0;
+}
+.hero-h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: clamp(40px, 5.6vw, 82px);
+  line-height: 0.98; letter-spacing: -2px;
+  color: #2A2118; margin: 0 0 22px;
+  text-wrap: balance;
+}
+.hero-h1 em { color: #FF8A3D; font-style: normal; }
+.hero-sub {
+  font-size: 18px; line-height: 1.55; color: #6B5E4E;
+  font-weight: 600; max-width: 460px; margin: 0 0 30px;
+}
+
+/* ── SEARCH BAR ────────────────────────────────── */
+.hero-search {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; padding: 8px; border-radius: 999px;
+  max-width: 480px;
+  box-shadow: 0 16px 40px rgba(42,33,24,0.10);
+  margin-bottom: 26px;
+}
+.hero-search-inner {
+  display: flex; align-items: center; gap: 8px;
+  padding-left: 14px; flex: 1;
+}
+.hero-search-pin { font-size: 18px; flex-shrink: 0; }
+.hero-search-input {
+  border: none; outline: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700; font-size: 15px;
+  color: #2A2118; width: 100%;
+  background: transparent;
+}
+.hero-search-input::placeholder { color: #C9BDAC; font-weight: 600; }
+.hero-search-btn {
+  border: none; cursor: pointer;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600; font-size: 16px;
+  color: #fff; background: #FF8A3D;
+  padding: 13px 24px; border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(255,138,61,0.35);
+  white-space: nowrap; flex-shrink: 0;
+  transition: box-shadow .15s, transform .15s;
+}
+.hero-search-btn:hover { transform: scale(1.04); box-shadow: 0 12px 26px rgba(255,138,61,.45); }
+
+/* ── SOCIAL PROOF ──────────────────────────────── */
+.hero-proof {
+  display: flex; align-items: center; gap: 18px;
+}
+.hero-avatars { display: flex; }
+.hero-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 3px solid #FFF6EA;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.hero-avatar:not(:first-child) { margin-left: -12px; }
+.hero-avatar-1 { background: #FFD08A; }
+.hero-avatar-2 { background: #9BE7DC; }
+.hero-avatar-3 { background: #FFB4C4; }
+.hero-proof-text {
+  font-weight: 700; color: #6B5E4E; font-size: 14px;
+}
+.hero-proof-text strong { color: #2A2118; font-weight: 800; }
+
+/* ── PET STAGE (RIGHT) ─────────────────────────── */
+.hero-stage {
+  flex: 1 1 50%; position: relative;
+  align-self: stretch; min-height: 520px;
+}
+.hero-stage-layer {
+  position: absolute;
+  /* No will-change here — the JS inline style.transform handles promotion.
+     Having will-change on the animated element can conflict with bob keyframes
+     that also set transform on the same node. */
+}
+
+/* Pet card base */
+.hero-pet-card {
+  overflow: hidden;
+  border: 5px solid #fff;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px;
+}
+.hero-pet-card span.emoji { line-height: 1; }
+.hero-pet-card span.label {
+  font-family: monospace;
+  font-size: 11px; color: #9B7B4E;
+  background: rgba(255,255,255,0.7);
+  padding: 2px 7px; border-radius: 6px;
+}
+
+.hero-pet-dog {
+  width: 280px; height: 280px;
+  border-radius: 42px; border-width: 6px;
+  background: repeating-linear-gradient(45deg, #FFD9A6 0 14px, #FFCE92 14px 28px);
+  box-shadow: 0 30px 60px rgba(42,33,24,0.18);
+}
+.hero-pet-dog .emoji { font-size: 68px; }
+
+.hero-pet-cat {
+  width: 156px; height: 156px;
+  border-radius: 34px;
+  background: repeating-linear-gradient(45deg, #C8EFE8 0 14px, #B5E9E0 14px 28px);
+  box-shadow: 0 22px 44px rgba(42,33,24,0.16);
+}
+.hero-pet-cat .emoji { font-size: 44px; }
+.hero-pet-cat .label { color: #3E8E84; }
+
+.hero-pet-rabbit {
+  width: 134px; height: 134px;
+  border-radius: 30px;
+  background: repeating-linear-gradient(45deg, #FFD0DC 0 14px, #FFC0CF 14px 28px);
+  box-shadow: 0 18px 38px rgba(42,33,24,0.16);
+}
+.hero-pet-rabbit .emoji { font-size: 40px; }
+.hero-pet-rabbit .label { color: #C16985; }
+
+.hero-pet-bird {
+  width: 106px; height: 106px;
+  border-radius: 26px; border-width: 4px;
+  background: repeating-linear-gradient(45deg, #FFE3A6 0 12px, #FFD98C 12px 24px);
+  box-shadow: 0 16px 32px rgba(42,33,24,0.16);
+}
+.hero-pet-bird .emoji { font-size: 34px; }
+
+/* Tag on dog card */
+.hero-dog-tag {
+  position: absolute; left: -14px; bottom: -14px;
+  background: #36C2B4; color: #fff;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600; font-size: 14px;
+  padding: 8px 16px; border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(54,194,180,0.4);
+  white-space: nowrap;
+}
+
+/* Booked notification */
+.hero-booked {
+  background: #fff; padding: 12px 16px;
+  border-radius: 18px;
+  box-shadow: 0 14px 30px rgba(42,33,24,0.14);
+  display: flex; align-items: center; gap: 10px;
+  white-space: nowrap;
+}
+.hero-booked-icon {
+  width: 38px; height: 38px; border-radius: 12px;
+  background: #FFEFD6;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.hero-booked-title {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600; font-size: 15px; color: #2A2118;
+}
+.hero-booked-sub {
+  font-weight: 700; font-size: 12px; color: #8C7E6C;
+}
+
+/* ── TRUST STRIP ───────────────────────────────── */
+.hero-trust {
+  position: relative; background: #2A2118;
+  padding: 64px 7vw; z-index: 5;
+}
+.hero-trust-row {
+  display: flex; flex-wrap: wrap;
+  align-items: center; justify-content: space-between;
+  gap: 32px; max-width: 1100px; margin: 0 auto;
+  will-change: transform;
+}
+.hero-trust-stat { text-align: center; }
+.hero-trust-num {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700; font-size: 44px;
+  color: #FF8A3D; line-height: 1; margin: 0;
+}
+.hero-trust-lbl {
+  font-weight: 700; color: #C9BDAC;
+  font-size: 15px; margin: 6px 0 0;
+}
+
+/* ── RESPONSIVE ────────────────────────────────── */
+@media (max-width: 860px) {
+  .hero-nav-link { display: none; }
+  .hero-body { gap: 24px; }
+  .hero-pet-dog { width: 220px; height: 220px; }
+  .hero-pet-cat { width: 120px; height: 120px; }
+  .hero-pet-rabbit { width: 104px; height: 104px; }
+  .hero-pet-bird { width: 80px; height: 80px; }
+  .hero-pet-cat .emoji { font-size: 34px; }
+  .hero-pet-rabbit .emoji { font-size: 30px; }
+  .hero-pet-bird .emoji { font-size: 24px; }
+  .hero-pet-dog .emoji { font-size: 52px; }
+  .hero-trust-num { font-size: 36px; }
+}
+
+@media (max-width: 640px) {
+  .hero-section { padding: 0 5vw; }
+  .hero-topbar { padding: 20px 0; }
+  .hero-logo-text { font-size: 22px; }
+  .hero-logo-icon { width: 36px; height: 36px; font-size: 18px; }
+  .hero-nav-login, .hero-nav-dashboard { font-size: 13px; padding: 9px 18px; }
+
+  .hero-body {
+    flex-direction: column;
+    min-height: auto;
+    padding: 16px 0 40px;
+    gap: 32px;
+  }
+  .hero-copy { max-width: 100%; }
+  .hero-h1 { font-size: clamp(34px, 9vw, 48px); letter-spacing: -1px; }
+  .hero-sub { font-size: 15px; }
+  .hero-eyebrow { font-size: 12px; padding: 6px 12px; }
+  .hero-search { max-width: 100%; }
+  .hero-search-btn { padding: 11px 18px; font-size: 14px; }
+
+  .hero-stage {
+    width: 100%; min-height: 340px;
+    flex: none; align-self: auto;
+  }
+  .hero-pet-dog { width: 180px; height: 180px; border-radius: 32px; }
+  .hero-pet-dog .emoji { font-size: 44px; }
+  .hero-pet-cat { width: 100px; height: 100px; border-radius: 26px; }
+  .hero-pet-cat .emoji { font-size: 28px; }
+  .hero-pet-rabbit { width: 88px; height: 88px; border-radius: 22px; }
+  .hero-pet-rabbit .emoji { font-size: 24px; }
+  .hero-pet-bird { width: 70px; height: 70px; border-radius: 20px; }
+  .hero-pet-bird .emoji { font-size: 20px; }
+  .hero-dog-tag { font-size: 12px; padding: 6px 12px; left: -8px; bottom: -8px; }
+  .hero-booked { padding: 10px 12px; }
+  .hero-booked-title { font-size: 13px; }
+  .hero-booked-sub { font-size: 11px; }
+  .hero-booked-icon { width: 32px; height: 32px; font-size: 16px; }
+  .hero-label { display: none; }
+
+  .hero-trust { padding: 48px 5vw; }
+  .hero-trust-row { justify-content: center; gap: 24px; }
+  .hero-trust-stat { min-width: 120px; }
+  .hero-trust-num { font-size: 32px; }
+  .hero-trust-lbl { font-size: 13px; }
+}

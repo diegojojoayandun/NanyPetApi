@@ -2,6 +2,7 @@
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Login;
+using DataAccessLayer.Entities.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -130,7 +131,7 @@ namespace DataAccessLayer.Repositories.Users
                 _configuration["Authentication:Audience"],
                 claims,
                 DateTime.Now,
-                DateTime.UtcNow.AddMinutes(10)
+                DateTime.UtcNow.AddHours(24)
             );
             var token = new JwtSecurityToken(header, payload);
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -158,6 +159,23 @@ namespace DataAccessLayer.Repositories.Users
                         await _roleManager.CreateAsync(new IdentityRole(registerRequestDTO.Rol));
                     }
                     await _userManager.AddToRoleAsync(user, registerRequestDTO.Rol);
+
+                    if (registerRequestDTO.Rol == "Owner")
+                    {
+                        _context.Owners.Add(new Owner { EmailUser = user.Email! });
+                        await _context.SaveChangesAsync();
+                    }
+                    else if (registerRequestDTO.Rol == "Herder")
+                    {
+                        _context.Herders.Add(new Herder
+                        {
+                            EmailUser = user.UserName!,
+                            VerificationStatus = VerificationStatus.Pending,
+                            IsAvailable = false
+                        });
+                        await _context.SaveChangesAsync();
+                    }
+
                     var userApp = _context.Users.FirstOrDefault(u => u.UserName == registerRequestDTO.Email);
                     return _mapper.Map<UserDto>(userApp);
                 }

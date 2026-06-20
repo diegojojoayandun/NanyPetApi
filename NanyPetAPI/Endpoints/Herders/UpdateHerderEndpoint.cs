@@ -1,83 +1,52 @@
-﻿using Ardalis.ApiEndpoints;
-using AutoMapper;
-using BusinessLogicLayer.Services.GenericService;
+using Ardalis.ApiEndpoints;
+using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Herder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
 namespace NanyPetAPI.Endpoints.Herders
 {
-    public class Query
+    public class HerderUpdateRequest
     {
-        [FromRoute(Name = "id")] public string id { get; set; } = null!;
-        [FromBody] public HerderUpdateDto updateDto { get; set; } = null!;
-
+        [FromRoute(Name = "id")] public string Id { get; set; } = null!;
+        [FromBody] public HerderUpdateDto Body { get; set; } = null!;
     }
+
+    [Authorize(Roles = "Herder,Admin")]
     [Route("api/herder")]
-    public class UpdateHerderEndpoint : EndpointBaseAsync
-        .WithRequest<Query>
-        .WithActionResult
+    public class UpdateHerderEndpoint : EndpointBaseAsync.WithRequest<HerderUpdateRequest>.WithActionResult
     {
-        private readonly IService<Herder> _herderService;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<UpdateHerderEndpoint> _logger;
-        protected APIResponse _apiResponse;
-        public UpdateHerderEndpoint(
-            IService<Herder> herderService,
-            IMapper mapper,
-            IConfiguration configuration,
-            ILogger<UpdateHerderEndpoint> logger)
+        private readonly ApplicationDbContext _context;
+
+        public UpdateHerderEndpoint(ApplicationDbContext context)
         {
-            _herderService = herderService;
-            _mapper = mapper;
-            _configuration = configuration;
-            _apiResponse = new APIResponse();
-            _logger = logger;
+            _context = context;
         }
 
-        /// <summary>
-        /// Update a specific Herder by unique id
-        /// </summary>
-        /// <param id="herder Id">The herder id</param>
-        /// <response code="200">herder retrieved</response>
-        /// <response code="400">bad request</response>
-        /// <response code="404">Product not found</response>
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [SwaggerOperation(
-            Summary = "Actualiza datos de cuidador",
-            Description = "Actualiza datos de cuidador",
-            OperationId = "UpdateHerder",
-            Tags = new[] { "Cuidadores" })]
-        public override async Task<ActionResult> HandleAsync([FromRoute] Query request, CancellationToken cancellationToken = default)
+        [SwaggerOperation(Summary = "Actualizar datos de cuidador", Tags = new[] { "Cuidadores" })]
+        public override async Task<ActionResult> HandleAsync(HerderUpdateRequest request, CancellationToken ct = default)
         {
-            try
-            {
-                if (request.updateDto == null || request.id != request.updateDto.Id)
-                {
-                    _apiResponse.IsSuccess = false;
-                    _apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(_apiResponse);
-                }
+            var herder = await _context.Herders.FindAsync(new object[] { request.Id }, ct);
+            if (herder == null)
+                return NotFound(new APIResponse { StatusCode = HttpStatusCode.NotFound, IsSuccess = false });
 
-                Herder modelHerder = _mapper.Map<Herder>(request.updateDto);
+            if (request.Body.Phone != null) herder.Phone = request.Body.Phone;
+            if (request.Body.Address != null) herder.Address = request.Body.Address;
+            if (request.Body.City != null) herder.City = request.Body.City;
+            if (request.Body.State != null) herder.State = request.Body.State;
+            if (request.Body.Location != null) herder.Location = request.Body.Location;
+            if (request.Body.Latitude.HasValue) herder.Latitude = request.Body.Latitude;
+            if (request.Body.Longitude.HasValue) herder.Longitude = request.Body.Longitude;
+            if (request.Body.ServiceRadius.HasValue) herder.ServiceRadius = request.Body.ServiceRadius;
+            if (request.Body.HourlyRate.HasValue) herder.HourlyRate = request.Body.HourlyRate;
+            if (request.Body.IsAvailable.HasValue) herder.IsAvailable = request.Body.IsAvailable.Value;
 
-                await _herderService.Update(modelHerder);
-                _apiResponse.StatusCode = HttpStatusCode.NoContent;
-                return Ok(_apiResponse);
-            }
-            catch (Exception ex)
-            {
-                _apiResponse.IsSuccess = false;
-                _apiResponse.ErrorMessages = new List<string> { ex.ToString() };
-            }
-            return BadRequest(_apiResponse);
-
+            await _context.SaveChangesAsync(ct);
+            return Ok(new APIResponse { StatusCode = HttpStatusCode.OK });
         }
     }
 }

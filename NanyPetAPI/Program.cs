@@ -1,5 +1,10 @@
+using System.Text;
+using BusinessLogicLayer.Services.BlobService;
+using BusinessLogicLayer.Services.GeoService;
 using BusinessLogicLayer.Services.GenericService;
+using BusinessLogicLayer.Services.NotificationService;
 using BusinessLogicLayer.Services.OwnerService;
+using BusinessLogicLayer.Services.PaymentService;
 using BusinessLogicLayer.Services.UserService;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
@@ -13,31 +18,25 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NanyPetAPI;
+using NanyPetAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-// Add services to the container.
-
-var Configuration = builder.Configuration; // using IConfiguration Interface  in ASP net core 6.0 or higher
+var Configuration = builder.Configuration;
 
 new EnvLoader().Load();
 Configuration.AddEnvironmentVariables();
 builder.Configuration.AddEnvironmentVariables();
 
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-// Swagger, Custom for Bearer Authorization  
 builder.Services.AddSwaggerGen(options =>
 {
     options.EnableAnnotations();
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Ingresar Bearer [space] tuToken \r\n\r\n " +
-                      "Ejemplo: Bearer 123456abcder",
+        Description = "Ingresar Bearer [space] tuToken \r\n\r\n Ejemplo: Bearer 123456abcder",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Scheme = "Bearer"
@@ -50,10 +49,10 @@ builder.Services.AddSwaggerGen(options =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id= "Bearer"
+                    Id = "Bearer"
                 },
                 Scheme = "oauth2",
-                Name="Bearer",
+                Name = "Bearer",
                 In = ParameterLocation.Header
             },
             new List<string>()
@@ -62,37 +61,64 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddResponseCaching();
+builder.Services.AddSignalR();
 
-
-// DbContext
-builder.Services.AddDbContext<ApplicationDbContext>(option =>
+// CORS para el frontend React
+builder.Services.AddCors(options =>
 {
-    option.UseSqlServer(Configuration["CONNECTION_STRING"]);
-
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins(
+                Configuration["FRONTEND_URL"] ?? "http://localhost:5173",
+                "http://localhost:5173",
+                "http://localhost:3000"
+              )
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
 });
 
-// Add Identity
+builder.Services.AddDbContext<ApplicationDbContext>(option =>
+{
+    var connectionString = Configuration["CONNECTION_STRING"];
+    var dbProvider = Configuration["DB_PROVIDER"] ?? "sqlite";
+
+    if (dbProvider.Equals("sqlserver", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(connectionString))
+        option.UseSqlServer(connectionString);
+    else
+        option.UseSqlite(connectionString ?? "Data Source=nanypet.db");
+});
+
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
-
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRepository<Herder>, Repository<Herder>>();
-builder.Services.AddScoped<IService<Herder>,  Service<Herder>>();
+builder.Services.AddScoped<IService<Herder>, Service<Herder>>();
 builder.Services.AddScoped<IRepository<Owner>, Repository<Owner>>();
 builder.Services.AddScoped<IService<Owner>, Service<Owner>>();
 builder.Services.AddScoped<OwnerService>();
+builder.Services.AddScoped<IBlobService, BlobService>();
+builder.Services.AddScoped<IGeoService, GeoService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddHttpClient("Wompi");
 
-// JWT Authentication
-builder.Services.AddAuthentication(options =>
+// JWT + Google OAuth en una sola cadena de autenticación
+var secretKey = Configuration["SECRET_KEY"] ?? throw new InvalidOperationException("SECRET_KEY no configurado en variables de entorno.");
+var googleClientId = Configuration["CLIENT_ID"];
+var googleClientSecret = Configuration["CLIENT_SECRET"];
+
+var authBuilder = builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-}).AddJwtBearer(options =>
+})
+.AddJwtBearer(options =>
 {
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
@@ -102,52 +128,70 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SECRET_KEY"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
     };
-});
-
-// External Authentication(Google, Facebook, ...)
-builder.Services.AddAuthentication(options =>
-{
-
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/api/signin-google";
-        // options.LoginPath = "/account/facebook-login";
-    })
-.AddGoogle(options =>
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
-    options.ClientId = Configuration["CLIENT_ID"];
-    options.ClientSecret = Configuration["CLIENT_SECRET"];
+    options.LoginPath = "/api/signin-google";
 });
+
+if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
+{
+    authBuilder.AddGoogle(options =>
+    {
+        options.ClientId = googleClientId;
+        options.ClientSecret = googleClientSecret;
+    });
+}
 
 builder.Services.AddHttpContextAccessor();
 
-
 var app = builder.Build();
 
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Seed roles y usuario admin inicial
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-    app.UseHsts();
+    foreach (var role in new[] { "Owner", "Herder", "Admin" })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole(role));
+    }
+
+    var adminEmail = Configuration["ADMIN_EMAIL"];
+    var adminPassword = Configuration["ADMIN_PASSWORD"];
+    if (!string.IsNullOrEmpty(adminEmail) && !string.IsNullOrEmpty(adminPassword))
+    {
+        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+        if (adminUser == null)
+        {
+            adminUser = new User
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                NormalizedEmail = adminEmail.ToUpper(),
+                FirstName = "Admin",
+                LastName = "NanyPet"
+            };
+            var result = await userManager.CreateAsync(adminUser, adminPassword);
+            if (result.Succeeded)
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
 }
 
-//app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
 
+app.UseCors("FrontendPolicy");
 app.UseRouting();
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-
 app.Run($"http://0.0.0.0:{port}");

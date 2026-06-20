@@ -41,7 +41,7 @@ namespace NanyPetAPI.Endpoints.Users
         /// <response code=200>Successful login</response>
         /// <response code=400>Bad Request</response>
         /// <response code=500>Internal Server Error</response>
-        [HttpPost("signup")]
+        [HttpPost("api/signup")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

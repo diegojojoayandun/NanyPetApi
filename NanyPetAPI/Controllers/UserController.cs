@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BusinessLogicLayer.Interfaces;
+using BusinessLogicLayer.Services.UserService;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Entities.DTO.Login;
 using Microsoft.AspNetCore.Authentication;
